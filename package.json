@@ -1,0 +1,25 @@
+{
+    "name": "ongtube",
+    "version": "1.0.0",
+    "description": "The best way to watch videos.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ghk0409/Ongtube.git"
+    },
+    "keywords": [
+        "Ongtube",
+        "Watch",
+        "videos",
+        "Youtube"
+    ],
+    "author": "Ongs<JIHONG KIM>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ghk0409/Ongtube/issues"
+    },
+    "homepage": "https://github.com/ghk0409/Ongtube#readme"
+}
