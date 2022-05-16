@@ -14,7 +14,7 @@
         "Youtube"
     ],
     "scripts": {
-        "dev": "nodemon --exec babel-node index.js"
+        "dev": "nodemon --exec babel-node src/server.js"
     },
     "author": "Ongs<JIHONG KIM>",
     "license": "MIT",
