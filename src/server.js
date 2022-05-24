@@ -1,4 +1,5 @@
 import express from "express";
+import morgan from "morgan";
 
 const PORT = 4000;
 
@@ -6,10 +7,11 @@ const PORT = 4000;
 const app = express();
 
 // middleware
-const logger = (req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-};
+// const logger = (req, res, next) => {
+//     console.log(`${req.method} ${req.url}`);
+//     next();
+// };
+const logger = morgan("dev");
 
 const privateMiddleware = (req, res, next) => {
     const url = req.url;
@@ -22,9 +24,7 @@ const privateMiddleware = (req, res, next) => {
 
 // route 설정하기
 // root 페이지(/) get request 처리, route handler argument = (requset, response)
-const handleHome = (req, res) => {
-    return res.send({ msg: "I want to you!~!" });
-};
+const handleHome = (req, res) => res.send({ msg: "I want to you!~!" });
 
 // login 페이지 route
 const handleLogin = (req, res) => {
@@ -35,7 +35,8 @@ const handleProtected = (req, res) => {
     return res.send("안 보일껄ㅋㅋㅋ");
 };
 
-app.use(logger, privateMiddleware);
+// app.use()는 어떤 URL 호출 시에도 동일하게 작동할 middleware 설정할 수 있음
+app.use(logger);
 app.get("/", handleHome);
 app.get("/login", handleLogin);
 app.get("/protected", handleProtected);
