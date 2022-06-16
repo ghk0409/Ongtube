@@ -15,6 +15,7 @@ const logger = morgan("dev");
 // view engine 설정(pug 사용!) 및 view 기본 경로 설정
 app.set("view engine", "pug");
 app.set("views", process.cwd() + "/src/views");
+
 // app.use()는 어떤 URL 호출 시에도 동일하게 작동할 middleware 설정할 수 있음
 app.use(logger);
 // 라우터 설정

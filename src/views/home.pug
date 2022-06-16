@@ -1,7 +1,6 @@
-doctype doctype html
-html(lang="ko")
-    head
-        title Ongtube
-    body
-        h1 Welcome to Ongtube!!
-    include partials/footer.pug
+extends base.pug
+
+block content 
+    h1 Home!! Welcome to Ongtube!
+    input(placeholder="Whats your name??")
+    button send
