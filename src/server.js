@@ -5,8 +5,6 @@ import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
 
 const PORT = 4000;
-
-console.log(process.cwd());
 // express function을 사용하여 express application 만들기
 const app = express();
 // morgan의 [dev] 옵션을 통한 logger 설정
