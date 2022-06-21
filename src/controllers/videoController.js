@@ -21,7 +21,7 @@ let videos = [
         rating: 4,
         comments: 82,
         createdAt: "12 minutes ago",
-        views: 316,
+        views: 1223,
         id: 2,
     },
     {
@@ -37,11 +37,11 @@ let videos = [
 export const trending = (req, res) =>
     res.render("home", { pageTitle: "Home", videos });
 
-export const see = (req, res) => {
+export const watch = (req, res) => {
     // ES6 문법 사용 (옆과 동알 -> const id = req.params.id;)
     const { id } = req.params;
     const video = videos[id];
-    res.render("watch", { pageTitle: `Watching ${video.title}` });
+    res.render("watch", { pageTitle: `Watching ${video.title}`, video });
 };
 export const edit = (req, res) => res.render("edit", { pageTitle: "Edit" });
 
