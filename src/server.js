@@ -14,12 +14,20 @@ const logger = morgan("dev");
 app.set("view engine", "pug");
 app.set("views", process.cwd() + "/src/views");
 
+/**
+ * 미들웨어
+ */
 // app.use()는 어떤 URL 호출 시에도 동일하게 작동할 middleware 설정할 수 있음
 app.use(logger);
-// 라우터 설정
-app.use("/", globalRouter);
-app.use("/users", userRouter);
-app.use("/videos", videoRouter);
+// form의 value들을 이해할 수 있고 자바스크립트 형식(오브젝트)으로 만들어줌
+app.use(express.urlencoded({ extended: true }));
+
+/**
+ * 라우터
+ */
+app.use("/", globalRouter); // 메인 페이지
+app.use("/users", userRouter); // 유저 관련 페이지
+app.use("/videos", videoRouter); // 비디오 관련 페이지
 
 // handleListening 메서드
 const handleListening = () =>

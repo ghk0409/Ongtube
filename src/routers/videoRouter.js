@@ -1,16 +1,11 @@
 import express from "express";
-import {
-    upload,
-    watch,
-    edit,
-    deleteVideo,
-} from "../controllers/videoController";
+import { watch, getEdit, postEdit } from "../controllers/videoController";
 
 const videoRouter = express.Router();
 
-videoRouter.get("/upload", upload);
 videoRouter.get("/:id(\\d+)", watch);
-videoRouter.get("/:id(\\d+)/edit", edit);
-videoRouter.get("/:id(\\d+)/delete", deleteVideo);
+
+// 비디오 정보 수정 페이지 라우터 (GET / POST 분리)
+videoRouter.route("/:id(\\d+)/edit").get(getEdit).post(postEdit);
 
 export default videoRouter;

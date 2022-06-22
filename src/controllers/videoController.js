@@ -34,19 +34,30 @@ let videos = [
     },
 ];
 
+// 메인 페이지 렌더링 컨트롤러
 export const trending = (req, res) =>
     res.render("home", { pageTitle: "Home", videos });
 
+// 비디오 재생 페이지 렌더링 컨트롤러
 export const watch = (req, res) => {
     // ES6 문법 사용 (옆과 동알 -> const id = req.params.id;)
     const { id } = req.params;
     const video = videos[id];
-    res.render("watch", { pageTitle: `Watching ${video.title}`, video });
+    res.render("watch", { pageTitle: `Watching: ${video.title}`, video });
 };
-export const edit = (req, res) => res.render("edit", { pageTitle: "Edit" });
 
-export const search = (req, res) => res.send("Search Videos");
+// 비디오 정보 편집 페이지 렌더링 컨트롤러
+export const getEdit = (req, res) => {
+    const { id } = req.params;
+    const video = videos[id];
+    res.render("edit", { pageTitle: `Editing: ${video.title}`, video });
+};
 
-export const upload = (req, res) => res.send("Upload Video!!");
-
-export const deleteVideo = (req, res) => res.send("Delete Video!!");
+// 비디오 정보 수정 컨트롤러
+export const postEdit = (req, res) => {
+    const { id } = req.params;
+    const { title } = req.body;
+    // 임시 가짜 데이터베이스 값 변경
+    videos[id].title = title;
+    return res.redirect(`/videos/${id}`);
+};
