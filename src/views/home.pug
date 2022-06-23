@@ -1,6 +1,12 @@
 extends base
 include mixins/video
 
+block headerContent 
+    nav 
+        ul 
+            li 
+                a(href="/videos/upload") UPLOAD VIDEO
+
 block content 
     h2 Welcome here you will see the trending videos
     each v in videos

@@ -1,3 +1,4 @@
+import "./db";
 import express from "express";
 import morgan from "morgan";
 import globalRouter from "./routers/globalRouter";
@@ -31,7 +32,7 @@ app.use("/videos", videoRouter); // 비디오 관련 페이지
 
 // handleListening 메서드
 const handleListening = () =>
-    console.log(`Server listening on http://localhost:${PORT} 🚀`);
+    console.log(`✅ Server listening on http://localhost:${PORT} 🚀`);
 
 // 서버 listen 상태 구동
 app.listen(PORT, handleListening);

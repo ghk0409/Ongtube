@@ -5,7 +5,9 @@ html(lang="ko")
         link(rel="stylesheet" href="https://unpkg.com/mvp.css")
     body
         header 
-            h1=pageTitle
+            h1
+                a(href="/")=pageTitle
+            block headerContent
         main
             block content
     include partials/footer

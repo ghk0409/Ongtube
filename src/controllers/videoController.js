@@ -61,3 +61,24 @@ export const postEdit = (req, res) => {
     videos[id].title = title;
     return res.redirect(`/videos/${id}`);
 };
+
+// 비디오 업로드 컨트롤러
+export const getUpload = (req, res) => {
+    return res.render("upload", { pageTitle: "Upload Video" });
+};
+
+export const postUpload = (req, res) => {
+    const { title } = req.body;
+    // 신규 가짜 비디오 데이터 생성
+    const newVideo = {
+        title: title,
+        rating: 0,
+        comments: 0,
+        createdAt: "just now",
+        views: 0,
+        id: videos.length,
+    };
+    // 가짜 데이터베이스에 newVideo 추가
+    videos.push(newVideo);
+    return res.redirect("/");
+};
