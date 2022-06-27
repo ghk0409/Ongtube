@@ -1,13 +1,13 @@
-import "./db";
-// db와 mongoose 연결 후 Model 인식
-import "./models/Video";
+/**
+ * * server.js
+ * * > express 및 서버의 configuration 관련 처리
+ */
 import express from "express";
 import morgan from "morgan";
 import globalRouter from "./routers/globalRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
 
-const PORT = 4000;
 // express function을 사용하여 express application 만들기
 const app = express();
 // morgan의 [dev] 옵션을 통한 logger 설정
@@ -32,9 +32,4 @@ app.use("/", globalRouter); // 메인 페이지
 app.use("/users", userRouter); // 유저 관련 페이지
 app.use("/videos", videoRouter); // 비디오 관련 페이지
 
-// handleListening 메서드
-const handleListening = () =>
-    console.log(`✅ Server listening on http://localhost:${PORT} 🚀`);
-
-// 서버 listen 상태 구동
-app.listen(PORT, handleListening);
+export default app;
