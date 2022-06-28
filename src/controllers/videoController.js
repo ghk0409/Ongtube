@@ -46,6 +46,18 @@ export const getUpload = (req, res) => {
 };
 
 export const postUpload = (req, res) => {
-    const { title } = req.body;
+    const { title, description, hashtags } = req.body;
+    // Video 모델 데이터 생성 시, mongo가 자동으로 고유한 랜덤 id값 부여함! (_id)
+    const video = new Video({
+        title: title,
+        description: description,
+        createdAt: Date.now(),
+        hashtags: hashtags.split(",").map((word) => `#${word}`),
+        meta: {
+            views: 0,
+            rating: 0,
+        },
+    });
+    console.log(video);
     return res.redirect("/");
 };
