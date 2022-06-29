@@ -12,9 +12,10 @@ export const home = async (req, res) => {
         return res.render("home", { pageTitle: "Home", videos: [] });
     });
      */
+    // promise 사용 (비동기 처리하기)
     try {
         const videos = await Video.find({});
-        return res.render("home", { pageTitle: "Home", videos: [] });
+        return res.render("home", { pageTitle: "Home", videos: videos });
     } catch (error) {
         return res.render("server-error", { error });
     }
@@ -45,19 +46,22 @@ export const getUpload = (req, res) => {
     return res.render("upload", { pageTitle: "Upload Video" });
 };
 
-export const postUpload = (req, res) => {
+export const postUpload = async (req, res) => {
     const { title, description, hashtags } = req.body;
-    // Video 모델 데이터 생성 시, mongo가 자동으로 고유한 랜덤 id값 부여함! (_id)
-    const video = new Video({
-        title: title,
-        description: description,
-        createdAt: Date.now(),
-        hashtags: hashtags.split(",").map((word) => `#${word}`),
-        meta: {
-            views: 0,
-            rating: 0,
-        },
-    });
-    console.log(video);
-    return res.redirect("/");
+    // Video document 생성하기, mongo가 자동으로 고유한 랜덤 id값 부여함! (_id)
+    // Video document DB 저장 (promise return을 위한 async/await)
+    // DB 저장 방법 1) new, object, save 2) create
+    try {
+        await Video.create({
+            title: title,
+            description: description,
+            hashtags: hashtags.split(",").map((word) => `#${word}`),
+        });
+        return res.redirect("/");
+    } catch (error) {
+        return res.render("upload", {
+            pageTitle: "Upload Video",
+            errorMessage: error._message,
+        });
+    }
 };
