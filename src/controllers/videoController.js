@@ -22,10 +22,11 @@ export const home = async (req, res) => {
 };
 
 // 비디오 재생 페이지 렌더링 컨트롤러
-export const watch = (req, res) => {
+export const watch = async (req, res) => {
     // ES6 문법 사용 (옆과 동알 -> const id = req.params.id;)
     const { id } = req.params;
-    return res.render("watch", { pageTitle: `Watching` });
+    const video = await Video.findById(id);
+    return res.render("watch", { pageTitle: video.title, video: video });
 };
 
 // 비디오 정보 편집 페이지 렌더링 컨트롤러
