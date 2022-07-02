@@ -1,8 +1,11 @@
 extends base.pug
 
 block content 
-    h4 Change Title of Video
+    h3 Update Video
     // POST 형태로 전송
     form(method="POST")
         input(name="title", placeholder="Video Title", value=video.title, required)
+        input(name="description", placeholder="Description", required, type="text", minlength=20, value=video.description)
+        // .join()을 사용해서 hashtags를 String 형태로 변환
+        input(name="hashtags", placeholder="Hashtags, separated by comma.", required, type="text", value=video.hashtags.join())
         input(value="Save", type="submit")

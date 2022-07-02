@@ -25,20 +25,47 @@ export const home = async (req, res) => {
 export const watch = async (req, res) => {
     // ES6 문법 사용 (옆과 동알 -> const id = req.params.id;)
     const { id } = req.params;
+    // URL 파라미터로 id값을 받은 후 해당 id로 DB 내의 데이터 조회
     const video = await Video.findById(id);
+    // DB에 해당 데이터 없을 경우 에러처리
+    if (!video) {
+        return res.render("404", { pageTitle: "Video not found.." });
+    }
     return res.render("watch", { pageTitle: video.title, video: video });
 };
 
 // 비디오 정보 편집 페이지 렌더링 컨트롤러
-export const getEdit = (req, res) => {
+export const getEdit = async (req, res) => {
     const { id } = req.params;
-    return res.render("edit", { pageTitle: `Editing` });
+    // DB 조회
+    const video = await Video.findById(id);
+    // DB에 해당 데이터 없을 경우 에러처리
+    if (!video) {
+        return res.render("404", { pageTitle: "Video not found.." });
+    }
+    return res.render("edit", {
+        pageTitle: `Edit: ${video.title}`,
+        video: video,
+    });
 };
 
 // 비디오 정보 수정 컨트롤러
-export const postEdit = (req, res) => {
+export const postEdit = async (req, res) => {
     const { id } = req.params;
-    const { title } = req.body;
+    const { title, description, hashtags } = req.body;
+    // DB 조회 (해당 id 데이터 존재 유무)
+    const video = await Video.exists({ _id: id });
+    // DB에 해당 데이터 없을 경우 에러처리
+    if (!video) {
+        return res.render("404", { pageTitle: "Video not found.." });
+    }
+    // 변경사항 DB 업데이트 (해당 Id값 데이터 업데이트)
+    await Video.findByIdAndUpdate(id, {
+        title: title,
+        description: description,
+        hashtags: Video.formatHashtags(hashtags),
+    });
+
     return res.redirect(`/videos/${id}`);
 };
 
@@ -56,7 +83,7 @@ export const postUpload = async (req, res) => {
         await Video.create({
             title: title,
             description: description,
-            hashtags: hashtags.split(",").map((word) => `#${word}`),
+            hashtags: Video.formatHashtags(hashtags),
         });
         return res.redirect("/");
     } catch (error) {

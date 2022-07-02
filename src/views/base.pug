@@ -7,7 +7,11 @@ html(lang="ko")
         header 
             h1
                 a(href="/")=pageTitle
-            block headerContent
+            nav 
+                ul 
+                    block headerContent
+                    li
+                        a(href="/") Home 
         main
             block content
     include partials/footer

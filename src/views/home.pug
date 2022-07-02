@@ -2,10 +2,8 @@ extends base
 include mixins/video
 
 block headerContent 
-    nav 
-        ul 
-            li 
-                a(href="/videos/upload") UPLOAD VIDEO
+    li
+        a(href="/videos/upload") UPLOAD VIDEO
 
 block content 
     each v in videos
