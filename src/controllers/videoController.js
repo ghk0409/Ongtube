@@ -14,7 +14,7 @@ export const home = async (req, res) => {
      */
     // promise 사용 (비동기 처리하기)
     try {
-        const videos = await Video.find({});
+        const videos = await Video.find({}).sort({ createdAt: "desc" }); // 최신순으로 정렬
         return res.render("home", { pageTitle: "Home", videos: videos });
     } catch (error) {
         return res.render("server-error", { error });
@@ -69,11 +69,12 @@ export const postEdit = async (req, res) => {
     return res.redirect(`/videos/${id}`);
 };
 
-// 비디오 업로드 컨트롤러
+// 비디오 업로드 컨트롤러 (GET: 업로드 페이지 렌더링)
 export const getUpload = (req, res) => {
     return res.render("upload", { pageTitle: "Upload Video" });
 };
 
+// 비디오 업로드 컨트롤러 (POST: DB 반영)
 export const postUpload = async (req, res) => {
     const { title, description, hashtags } = req.body;
     // Video document 생성하기, mongo가 자동으로 고유한 랜덤 id값 부여함! (_id)
@@ -92,4 +93,21 @@ export const postUpload = async (req, res) => {
             errorMessage: error._message,
         });
     }
+};
+// 비디오 삭제 컨트롤러 (GET)
+export const deleteVideo = async (req, res) => {
+    const { id } = req.params;
+    // DB 내 데이터 삭제
+    await Video.findByIdAndDelete(id);
+    return res.redirect("/");
+};
+
+// 데이터 검색 컨트롤러 (GET: 검색 페이지 렌더링)
+export const search = (req, res) => {
+    const { keyword } = req.query;
+    console.log(req.params, req.body, req.query);
+    if (keyword) {
+        // search
+    }
+    return res.render("search", { pageTitle: "Search Video" });
 };
