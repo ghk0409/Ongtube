@@ -103,11 +103,17 @@ export const deleteVideo = async (req, res) => {
 };
 
 // 데이터 검색 컨트롤러 (GET: 검색 페이지 렌더링)
-export const search = (req, res) => {
+export const search = async (req, res) => {
     const { keyword } = req.query;
-    console.log(req.params, req.body, req.query);
+    let videos = [];
+    // keyword 존재할 경우 해당 keyword로 DB 조회
     if (keyword) {
         // search
+        videos = await Video.find({
+            title: {
+                $regex: new RegExp(keyword, "i"),
+            },
+        });
     }
-    return res.render("search", { pageTitle: "Search Video" });
+    return res.render("search", { pageTitle: "Search Video", videos });
 };
