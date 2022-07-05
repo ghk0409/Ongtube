@@ -4,7 +4,7 @@
  */
 import express from "express";
 import morgan from "morgan";
-import globalRouter from "./routers/globalRouter";
+import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
 
@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 /**
  * 라우터
  */
-app.use("/", globalRouter); // 메인 페이지
+app.use("/", rootRouter); // 메인 페이지
 app.use("/users", userRouter); // 유저 관련 페이지
 app.use("/videos", videoRouter); // 비디오 관련 페이지
 
