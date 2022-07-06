@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 
 // 유저 스키마
@@ -7,6 +8,11 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     name: { type: String, required: true },
     location: String,
+});
+
+// 패스워드 해싱 암호화 처리
+userSchema.pre("save", async function () {
+    this.password = await bcrypt.hash(this.password, 5);
 });
 
 // 유저 모델 생성
