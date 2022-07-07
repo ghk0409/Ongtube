@@ -4,7 +4,28 @@ import User from "../models/User";
 export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
 // 회원가입 POST 컨트롤러 (유저 생성)
 export const postJoin = async (req, res) => {
-    const { name, email, username, password, location } = req.body;
+    const { name, email, username, password, passwordCheck, location } =
+        req.body;
+    const pageTitle = "Join";
+
+    // password와 passwordCheck 동일 비교
+    if (password !== passwordCheck) {
+        return res.status(400).render("join", {
+            pageTitle,
+            errorMessage: "Password confirmation does not match.",
+        });
+    }
+
+    // username \ email 중복검사
+    const exists = await User.exists({
+        $or: [{ username }, { email }],
+    });
+    if (exists) {
+        return res.status(400).render("join", {
+            pageTitle: pageTitle,
+            errorMessage: "This username/email is already taken.",
+        });
+    }
 
     await User.create({
         name,

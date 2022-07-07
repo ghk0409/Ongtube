@@ -29,7 +29,9 @@ export const watch = async (req, res) => {
     const video = await Video.findById(id);
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
-        return res.render("404", { pageTitle: "Video not found.." });
+        return res
+            .status(404)
+            .render("404", { pageTitle: "Video not found.." });
     }
     return res.render("watch", { pageTitle: video.title, video: video });
 };
@@ -41,7 +43,9 @@ export const getEdit = async (req, res) => {
     const video = await Video.findById(id);
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
-        return res.render("404", { pageTitle: "Video not found.." });
+        return res
+            .status(404)
+            .render("404", { pageTitle: "Video not found.." });
     }
     return res.render("edit", {
         pageTitle: `Edit: ${video.title}`,
@@ -57,7 +61,9 @@ export const postEdit = async (req, res) => {
     const video = await Video.exists({ _id: id });
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
-        return res.render("404", { pageTitle: "Video not found.." });
+        return res
+            .status(404)
+            .render("404", { pageTitle: "Video not found.." });
     }
     // 변경사항 DB 업데이트 (해당 Id값 데이터 업데이트)
     await Video.findByIdAndUpdate(id, {
@@ -88,7 +94,7 @@ export const postUpload = async (req, res) => {
         });
         return res.redirect("/");
     } catch (error) {
-        return res.render("upload", {
+        return res.status(400).render("upload", {
             pageTitle: "Upload Video",
             errorMessage: error._message,
         });
