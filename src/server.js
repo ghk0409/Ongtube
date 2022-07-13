@@ -4,6 +4,7 @@
  */
 import express from "express";
 import morgan from "morgan";
+import session from "express-session";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
@@ -24,6 +25,26 @@ app.set("views", process.cwd() + "/src/views");
 app.use(logger);
 // form의 value들을 이해할 수 있고 자바스크립트 형식(오브젝트)으로 만들어줌
 app.use(express.urlencoded({ extended: true }));
+// Session 미들웨어 적용
+app.use(
+    session({
+        secret: "Hello!",
+        resave: true,
+        saveUninitialized: true,
+    })
+);
+// Session 확인
+app.use((req, res, next) => {
+    req.sessionStore.all((error, sessions) => {
+        console.log(sessions);
+        next();
+    });
+});
+
+app.get("/add-one", (req, res, next) => {
+    req.session.apple += 1;
+    return res.send(`${req.session.id}\n${req.session.apple}`);
+});
 
 /**
  * 라우터
