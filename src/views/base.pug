@@ -1,7 +1,7 @@
 doctype doctype html
 html(lang="ko")
     head
-        title #{pageTitle} | Ongtube
+        title #{pageTitle} | #{siteName}
         link(rel="stylesheet" href="https://unpkg.com/mvp.css")
     body
         header 
@@ -9,13 +9,21 @@ html(lang="ko")
                 a(href="/")=pageTitle
             nav 
                 ul 
-                    block headerContent
                     li
                         a(href="/") Home 
+                    if loggedIn 
+                        li 
+                            a(href="/logout") Logout 
+                        li 
+                            a(href="/my-profile") #{loggedInUser.name}의 Profile
+                    else
+                        li
+                            a(href="/login") Login
+                        li
+                            a(href="/join") Join
                     li 
                         a(href="/search") Search
-                    li
-                        a(href="/join") Join
+                    block headerContent
         main
             block content
     include partials/footer

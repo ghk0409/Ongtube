@@ -8,6 +8,7 @@ import session from "express-session";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
+import { localsMiddleware } from "./middlewares";
 
 // express function을 사용하여 express application 만들기
 const app = express();
@@ -25,6 +26,7 @@ app.set("views", process.cwd() + "/src/views");
 app.use(logger);
 // form의 value들을 이해할 수 있고 자바스크립트 형식(오브젝트)으로 만들어줌
 app.use(express.urlencoded({ extended: true }));
+
 // Session 미들웨어 적용
 app.use(
     session({
@@ -33,19 +35,9 @@ app.use(
         saveUninitialized: true,
     })
 );
-// Session 확인
-app.use((req, res, next) => {
-    req.sessionStore.all((error, sessions) => {
-        console.log(sessions);
-        next();
-    });
-});
 
-app.get("/add-one", (req, res, next) => {
-    req.session.apple += 1;
-    return res.send(`${req.session.id}\n${req.session.apple}`);
-});
-
+// locals 설정 미들웨어 (반드시 session 미들웨어 이후에 나와야 session에 접근 가능!!)
+app.use(localsMiddleware);
 /**
  * 라우터
  */
