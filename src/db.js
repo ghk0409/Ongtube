@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 // mongodb에 연결할 database를 'url/DB명' 형태로 입력
-mongoose.connect("mongodb://127.0.0.1:27017/ongtube", {
+mongoose.connect(process.env.DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
