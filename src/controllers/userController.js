@@ -1,4 +1,5 @@
 import User from "../models/User";
+import fetch from "cross-fetch";
 import bcrypt from "bcrypt";
 
 // 회원가입 GET 컨트롤러 (회원가입 페이지 렌더링)
@@ -54,7 +55,7 @@ export const postLogin = async (req, res) => {
     const { username, password } = req.body;
     const pageTitle = "Login";
     // check if account exists
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username, socialOnly: false });
     if (!user) {
         return res.status(400).render("login", {
             pageTitle: pageTitle,
@@ -75,10 +76,106 @@ export const postLogin = async (req, res) => {
     return res.redirect("/");
 };
 
+// Github OAuth 앱 로그인 연동 컨트롤러
+export const startGithubLogin = (req, res) => {
+    // github login base url
+    const baseUrl = "https://github.com/login/oauth/authorize";
+    // url params
+    const config = {
+        client_id: process.env.GH_CLIENT,
+        allow_signup: false,
+        scope: "read:user user:email",
+    };
+    const params = new URLSearchParams(config).toString();
+    // final url
+    const finalUrl = `${baseUrl}?${params}`;
+
+    return res.redirect(finalUrl);
+};
+
+// Github 앱 인증 연동 컨트롤러
+export const finishGithubLogin = async (req, res) => {
+    // github access_token base url
+    const baseUrl = "https://github.com/login/oauth/access_token";
+    // url params
+    const config = {
+        client_id: process.env.GH_CLIENT,
+        client_secret: process.env.GH_SECRET,
+        code: req.query.code,
+    };
+    const params = new URLSearchParams(config).toString();
+    // final url
+    const finalUrl = `${baseUrl}?${params}`;
+    // access_token 요청
+    // POST 요청 시, headers 안 넣으면 text로 return됨
+    const tokenRequest = await (
+        await fetch(finalUrl, {
+            method: "POST",
+            headers: {
+                Accept: "application/json,",
+            },
+        })
+    ).json();
+    // access_token 값으로 github API 호출 -> 필요 데이터 요청
+    if ("access_token" in tokenRequest) {
+        // access api 호출
+        const { access_token } = tokenRequest;
+        const apiUrl = "https://api.github.com";
+        // user api 호출
+        const userData = await (
+            await fetch(`${apiUrl}/user`, {
+                headers: {
+                    Authorization: `token ${access_token}`,
+                },
+            })
+        ).json();
+        // user email api 호출
+        const emailData = await (
+            await fetch(`${apiUrl}/user/emails`, {
+                headers: {
+                    Authorization: `token ${access_token}`,
+                },
+            })
+        ).json();
+        // emailData에서 인증된 고유한 이메일 값만 가져오기
+        const emailObj = emailData.find(
+            (email) => email.primary === true && email.verified === true
+        );
+        // 고유+인증된 이메일 없을 경우 로그인 페이지 리다이렉트
+        if (!emailObj) {
+            // set notification
+            return res.redirect("/login");
+        }
+        // DB에 해당 email 가진 유저가 있는지 확인
+        let user = await User.findOne({ email: emailObj.email });
+        if (!user) {
+            // create an account (계정 생성)
+            // 해당 계정은 password가 없으므로 로그인 form 이용 불가
+            user = await User.create({
+                name: userData.name,
+                avatarUrl: userData.avatar_url,
+                email: emailObj.email,
+                username: userData.login,
+                password: "",
+                socialOnly: true,
+                location: userData.location,
+            });
+        }
+        // session에 유저 정보 추가
+        req.session.loggedIn = true;
+        req.session.user = user;
+        return res.redirect("/");
+    } else {
+        return res.redirect("/login");
+    }
+};
+
+// 로그아웃 컨트롤러
+export const logout = (req, res) => {
+    req.session.destroy();
+    return res.redirect("/");
+};
+
 export const edit = (req, res) => res.send("Edit users");
-
-export const remove = (req, res) => res.send("remove user!");
-
-export const logout = (req, res) => res.send("Logout!!");
 
 export const see = (req, res) => res.send("See User!");
