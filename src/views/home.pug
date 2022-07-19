@@ -1,10 +1,6 @@
 extends base
 include mixins/video
 
-block headerContent 
-    li
-        a(href="/videos/upload") UPLOAD VIDEO
-
 block content 
     each v in videos
         +video(v)

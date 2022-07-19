@@ -45,6 +45,7 @@ app.use(localsMiddleware);
 /**
  * 라우터
  */
+app.use("/uploads", express.static("uploads")); // Static Files Serving
 app.use("/", rootRouter); // 메인 페이지
 app.use("/users", userRouter); // 유저 관련 페이지
 app.use("/videos", videoRouter); // 비디오 관련 페이지

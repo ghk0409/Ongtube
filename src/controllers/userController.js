@@ -176,11 +176,128 @@ export const logout = (req, res) => {
     return res.redirect("/");
 };
 
+// 유저 프로파일 GET 컨트롤러 (프로파일 수정 페이지 렌더링)
 export const getEdit = (req, res) => {
     return res.render("edit-profile", { pageTitle: "Edit Profile" });
 };
-export const postEdit = (req, res) => {
-    return res.render("edit-profile");
+
+// 유저 프로파일 POST 컨트롤러 (프로파일 수정)
+export const postEdit = async (req, res) => {
+    // ES6 문법으로 깔끔하게
+    const {
+        session: {
+            user: {
+                _id,
+                avatarUrl,
+                email: beforeEmail,
+                username: beforeUsername,
+                socialOnly,
+            },
+        },
+        body: { name, email, username, location },
+        file,
+    } = req;
+
+    // 소셜 로그인의 경우 email 수정 불가
+    if (socialOnly && beforeEmail !== email) {
+        return res.status(400).render("edit-profile", {
+            pageTitle: "Edit Profile",
+            errorMessage: "This email can't change. Because Social Account!!",
+        });
+    }
+    // session과 form의 email 다른지 검사
+    if (beforeEmail !== email) {
+        const exists = await User.exists({ email });
+        // 업데이트 이메일이 존재하는지 검사
+        if (exists) {
+            return res.status(400).render("edit-profile", {
+                pageTitle: "Edit Profile",
+                errorMessage: "This email is already exist!!",
+            });
+        }
+    }
+    // session과 form의 username 다른지 검사
+    if (beforeUsername !== username) {
+        const exists = await User.exists({ username });
+        // 업데이트 username이 존재하는지 검사
+        if (exists) {
+            return res.status(400).render("edit-profile", {
+                pageTitle: "Edit Profile",
+                errorMessage: "This username is already exist!!",
+            });
+        }
+    }
+
+    // mongoDB Update
+    // avatar 파일이 업로드 된 경우에 해당 file로 저장, 아닐 경우 기존 avatarUrl 유지
+    const updateUser = await User.findByIdAndUpdate(
+        _id,
+        {
+            avatarUrl: file ? file.path : avatarUrl,
+            name,
+            email,
+            username,
+            location,
+        },
+        { new: true }
+    );
+    // Session Update
+    req.session.user = updateUser;
+    return res.redirect("/users/edit");
+};
+
+// 비밀번호 변경 GET 컨트롤러 (비밀번호 변경 페이지 렌더링)
+export const getChangePassword = (req, res) => {
+    // 소셜 계정일 경우, 비밀번호가 없으므로 해당 페이지 접근 막기
+    if (req.session.user.socialOnly) {
+        return res.redirect("/");
+    }
+    return res.render("users/change-password", {
+        pageTitle: "Change Password",
+    });
+};
+
+// 비밀번호 변경 POST 컨트롤러 (비밀번호 변경)
+export const postChangePassword = async (req, res) => {
+    const {
+        session: {
+            user: { _id },
+        },
+        body: { oldPassword, newPassword, newPasswordCheck },
+    } = req;
+    const user = await User.findById(_id);
+    const ok = await bcrypt.compare(oldPassword, user.password);
+
+    // 기존 패스워드 체크
+    if (!ok) {
+        return res.status(400).render("users/change-password", {
+            pageTitle: "Change Password",
+            errorMessage: "The current password is incorrect",
+        });
+    }
+    // 신규 패스워드 체크
+    if (newPassword !== newPasswordCheck) {
+        return res.status(400).render("users/change-password", {
+            pageTitle: "Change Password",
+            errorMessage: "The password does not match the confirmation",
+        });
+    }
+    // 기존 패스워드와 신규 패스워드가 동일한지 체크
+    if (oldPassword === newPassword) {
+        return res.status(400).render("users/change-password", {
+            pageTitle: "Change Password",
+            errorMessage: "The old password equals new password",
+        });
+    }
+
+    // 신규 패스워드 업데이트
+    user.password = newPassword;
+    // save 또는 create할 경우에 미리 만들어둔 비밀번호 해싱이 이뤄짐
+    await user.save();
+    // 302 redirect 프록시 막기 위한 세션 파괴
+    req.session.destroy();
+    // send notification
+    return res.redirect("/login");
 };
 
 export const see = (req, res) => res.send("See User!");

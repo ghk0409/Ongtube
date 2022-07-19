@@ -82,6 +82,7 @@ export const getUpload = (req, res) => {
 
 // 비디오 업로드 컨트롤러 (POST: DB 반영)
 export const postUpload = async (req, res) => {
+    const { path: fileUrl } = req.file;
     const { title, description, hashtags } = req.body;
     // Video document 생성하기, mongo가 자동으로 고유한 랜덤 id값 부여함! (_id)
     // Video document DB 저장 (promise return을 위한 async/await)
@@ -89,6 +90,7 @@ export const postUpload = async (req, res) => {
     try {
         await Video.create({
             title: title,
+            fileUrl: fileUrl,
             description: description,
             hashtags: Video.formatHashtags(hashtags),
         });
