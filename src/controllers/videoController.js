@@ -41,6 +41,9 @@ export const watch = async (req, res) => {
 // 비디오 정보 편집 페이지 렌더링 컨트롤러
 export const getEdit = async (req, res) => {
     const { id } = req.params;
+    const {
+        user: { _id },
+    } = req.session;
     // DB 조회
     const video = await Video.findById(id);
     // DB에 해당 데이터 없을 경우 에러처리
@@ -48,6 +51,10 @@ export const getEdit = async (req, res) => {
         return res
             .status(404)
             .render("404", { pageTitle: "Video not found.." });
+    }
+    // 해당 비디오 소유자가 아닐 경우 접근 불가 (비교 데이터 형식 주의)
+    if (String(video.owner) !== String(_id)) {
+        return res.status(403).redirect("/");
     }
     return res.render("edit", {
         pageTitle: `Edit: ${video.title}`,
@@ -58,14 +65,22 @@ export const getEdit = async (req, res) => {
 // 비디오 정보 수정 컨트롤러
 export const postEdit = async (req, res) => {
     const { id } = req.params;
+    const {
+        user: { _id },
+    } = req.session;
     const { title, description, hashtags } = req.body;
     // DB 조회 (해당 id 데이터 존재 유무)
     const video = await Video.exists({ _id: id });
+
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
         return res
             .status(404)
             .render("404", { pageTitle: "Video not found.." });
+    }
+    // 해당 비디오 소유자가 아닐 경우 접근 불가 (비교 데이터 형식 주의)
+    if (String(video.owner) !== String(_id)) {
+        return res.status(403).redirect("/");
     }
     // 변경사항 DB 업데이트 (해당 Id값 데이터 업데이트)
     await Video.findByIdAndUpdate(id, {
@@ -100,13 +115,16 @@ export const postUpload = async (req, res) => {
     // Video document DB 저장 (promise return을 위한 async/await)
     // DB 저장 방법 1) new, object, save 2) create
     try {
-        await Video.create({
+        const newVideo = await Video.create({
             title: title,
             fileUrl: fileUrl,
             description: description,
             owner: _id,
             hashtags: Video.formatHashtags(hashtags),
         });
+        const user = await User.findById(_id);
+        user.videos.push(newVideo._id);
+        user.save();
         return res.redirect("/");
     } catch (error) {
         return res.status(400).render("upload", {
@@ -118,6 +136,20 @@ export const postUpload = async (req, res) => {
 // 비디오 삭제 컨트롤러 (GET)
 export const deleteVideo = async (req, res) => {
     const { id } = req.params;
+    const {
+        user: { _id },
+    } = req.session;
+    const video = await Video.findById(id);
+    // DB에 해당 데이터 없을 경우 에러처리
+    if (!video) {
+        return res
+            .status(404)
+            .render("404", { pageTitle: "Video not found.." });
+    }
+    // 해당 비디오 소유자가 아닐 경우 접근 불가 (비교 데이터 형식 주의)
+    if (String(video.owner) !== String(_id)) {
+        return res.status(403).redirect("/");
+    }
     // DB 내 데이터 삭제
     await Video.findByIdAndDelete(id);
     return res.redirect("/");
