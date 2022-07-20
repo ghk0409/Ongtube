@@ -1,3 +1,4 @@
+import User from "../models/User";
 import Video from "../models/Video";
 
 // 홈 페이지 렌더링 컨트롤러
@@ -25,8 +26,9 @@ export const home = async (req, res) => {
 export const watch = async (req, res) => {
     // ES6 문법 사용 (옆과 동알 -> const id = req.params.id;)
     const { id } = req.params;
-    // URL 파라미터로 id값을 받은 후 해당 id로 DB 내의 데이터 조회
-    const video = await Video.findById(id);
+    // 전달받은 Id로 video 조회 + owner 속성에 해당하는 데이터 연동(User모델 연동)
+    const video = await (await Video.findById(id)).populate("owner");
+    console.log(video);
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
         return res
@@ -82,8 +84,18 @@ export const getUpload = (req, res) => {
 
 // 비디오 업로드 컨트롤러 (POST: DB 반영)
 export const postUpload = async (req, res) => {
-    const { path: fileUrl } = req.file;
-    const { title, description, hashtags } = req.body;
+    // const {
+    //     user: { _id },
+    // } = req.session;
+    // const { path: fileUrl } = req.file;
+    // const { title, description, hashtags } = req.body;
+    const {
+        session: {
+            user: { _id },
+        },
+        file: { path: fileUrl },
+        body: { title, description, hashtags },
+    } = req;
     // Video document 생성하기, mongo가 자동으로 고유한 랜덤 id값 부여함! (_id)
     // Video document DB 저장 (promise return을 위한 async/await)
     // DB 저장 방법 1) new, object, save 2) create
@@ -92,6 +104,7 @@ export const postUpload = async (req, res) => {
             title: title,
             fileUrl: fileUrl,
             description: description,
+            owner: _id,
             hashtags: Video.formatHashtags(hashtags),
         });
         return res.redirect("/");
