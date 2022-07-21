@@ -42,10 +42,14 @@ app.use(
 
 // locals 설정 미들웨어 (반드시 session 미들웨어 이후에 나와야 session에 접근 가능!!)
 app.use(localsMiddleware);
+
+// Static Files Serving
+app.use("/uploads", express.static("uploads")); // uploads folder
+app.use("/static", express.static("assets")); // frontend static files
+
 /**
  * 라우터
  */
-app.use("/uploads", express.static("uploads")); // Static Files Serving
 app.use("/", rootRouter); // 메인 페이지
 app.use("/users", userRouter); // 유저 관련 페이지
 app.use("/videos", videoRouter); // 비디오 관련 페이지
