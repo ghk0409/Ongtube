@@ -392,13 +392,19 @@ export const postChangePassword = async (req, res) => {
 // 유저 프로필 컨트롤러
 export const see = async (req, res) => {
     const { id } = req.params;
-    // user 및 해당 유저의 videos 데이터 가져오기
-    const user = await User.findById(id).populate("videos");
+    // user 및 해당 유저의 videos 데이터 가져오기 (double populate)
+    const user = await User.findById(id).populate({
+        path: "videos",
+        populate: {
+            path: "owner",
+            model: "User",
+        },
+    });
 
     if (!user) {
         return res.status(404).render("404", { pageTitle: "User not found." });
     }
-
+    console.log(user);
     return res.render("users/profile", {
         pageTitle: user.name,
         user,
