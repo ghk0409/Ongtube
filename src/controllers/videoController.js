@@ -15,7 +15,9 @@ export const home = async (req, res) => {
      */
     // promise 사용 (비동기 처리하기)
     try {
-        const videos = await Video.find({}).sort({ createdAt: "desc" }); // 최신순으로 정렬
+        const videos = await Video.find({})
+            .sort({ createdAt: "desc" })
+            .populate("owner"); // 최신순으로 정렬
         return res.render("home", { pageTitle: "Home", videos: videos });
     } catch (error) {
         return res.render("server-error", { error });
