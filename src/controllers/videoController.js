@@ -30,7 +30,7 @@ export const watch = async (req, res) => {
     const { id } = req.params;
     // 전달받은 Id로 video 조회 + owner 속성에 해당하는 데이터 연동(User모델 연동)
     const video = await (await Video.findById(id)).populate("owner");
-    console.log(video);
+
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
         return res

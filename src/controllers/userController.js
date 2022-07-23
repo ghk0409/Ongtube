@@ -227,7 +227,7 @@ export const finishKakaoLogin = async (req, res) => {
                 },
             })
         ).json();
-        console.log(userData);
+
         // 고유+인증된 이메일 없을 경우 로그인 페이지 리다이렉트
         const userObj = userData.kakao_account;
         const userEmail = userObj.email;
@@ -404,7 +404,7 @@ export const see = async (req, res) => {
     if (!user) {
         return res.status(404).render("404", { pageTitle: "User not found." });
     }
-    console.log(user);
+
     return res.render("users/profile", {
         pageTitle: user.name,
         user,
