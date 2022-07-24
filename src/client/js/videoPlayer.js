@@ -1,11 +1,14 @@
 const video = document.querySelector("video");
 const playBtn = document.getElementById("play");
+const playBtnIcon = playBtn.querySelector("i");
 const muteBtn = document.getElementById("mute");
+const muteBtnIcon = muteBtn.querySelector("i");
 const volumeRange = document.getElementById("volume");
 const currnetTime = document.getElementById("currentTime");
 const totalTime = document.getElementById("totalTime");
 const timeline = document.getElementById("timeline");
 const fullScreenBtn = document.getElementById("fullScreen");
+const fullScreenIcon = fullScreenBtn.querySelector("i");
 const videoContainer = document.getElementById("videoContainer");
 const videoControls = document.getElementById("videoControls");
 
@@ -24,7 +27,7 @@ const handlePlayClick = (e) => {
     } else {
         video.pause();
     }
-    playBtn.innerText = video.paused ? "Play" : "Pause";
+    playBtnIcon.classList = video.paused ? "fas fa-play" : "fas fa-pause";
 };
 
 // 음소거버튼 핸들러
@@ -39,7 +42,9 @@ const handleMuteClick = (e) => {
         volumeValue = 0.1;
         video.volume = volumeValue;
     }
-    muteBtn.innerText = video.muted ? "Unmute" : "Mute";
+    muteBtnIcon.classList = video.muted
+        ? "fas fa-volume-mute"
+        : "fas fa-volume-up";
     volumeRange.value = video.muted ? 0 : volumeValue;
 };
 
@@ -54,7 +59,8 @@ const handleVolumeChange = (event) => {
     } else {
         video.muted = false;
     }
-    muteBtn.innerText = Number(value) === 0 ? "Unmute" : "Mute";
+    muteBtnIcon.classList =
+        Number(value) === 0 ? "fas fa-volume-mute" : "fas fa-volume-up";
     volumeValue = value;
     video.volume = value;
 };
@@ -93,10 +99,10 @@ const handleFullScreen = () => {
     // 전체화면 유무에 따라 버튼 텍스트 및 버튼 기능 구분
     if (fullScreenCheck) {
         document.exitFullscreen();
-        fullScreenBtn.innerText = "Enter Full Screen";
+        fullScreenIcon.classList = "fas fa-expand";
     } else {
         videoContainer.requestFullscreen();
-        fullScreenBtn.innerText = "Exit Full Screen";
+        fullScreenIcon.classList = "fas fa-compress";
     }
 };
 
@@ -116,22 +122,88 @@ const handleMouseMove = () => {
         controlsMovementTimeout = null;
     }
     videoControls.classList.add("showing");
-    // 비디오 위에서 마우스가 멈춰있을 경우 컨트롤창 숨김
+    // 비디오 위에서 마우스가 멈춰있을 경우 컨트롤창 숨김 (clearTimeout 사용을 위해 setTimeout ID값 저장)
     controlsMovementTimeout = setTimeout(hideControls, 3000);
 };
 
 // 비디오 위의 마우스 미감지 핸들러
 const handleMouseLeave = () => {
-    // 3초 이후에 showing 클래스 지우기
+    // 3초 이후에 showing 클래스 지우기 (clearTimeout 사용을 위해 setTimeout ID값 저장)
     controlsTimeout = setTimeout(hideControls, 3000);
 };
 
+// 키보드 비디오 볼륨 조절 함수
+const handleVolumeKey = (key) => {
+    if (key === "ArrowUp" && video.volume < 0.95) {
+        video.volume += 0.05;
+    } else if (key === "ArrowDown" && video.volume > 0.05) {
+        video.volume -= 0.05;
+    }
+    volumeValue = video.volume;
+    volumeRange.value = volumeValue;
+};
+
+// 키보드 비디오 재생 조절 함수
+const handleVideoMoveKey = (key) => {
+    // 5초 단위로 이동
+    if (key === "ArrowLeft") {
+        // 5초 미만이 재생됐을 경우 비디오 재생 처음으로 (0초)
+        video.currentTime = video.currentTime > 5 ? video.currentTime - 5 : 0;
+    } else if (key === "ArrowRight") {
+        // 남은 재생시간이 5초 미만일 경우 비디오 재생 마지막으로 (video.duration)
+        video.currentTime =
+            video.currentTime < video.duration - 5
+                ? video.currentTime + 5
+                : video.duration;
+    }
+};
+
+// 키보드 단축키 기능 핸들러
+const handleKeydown = (event) => {
+    const k = event.key;
+    // if (k === " ") {
+    //     event.preventDefault();
+    //     handlePlayClick();
+    // }
+    switch (k) {
+        // 유튜브처럼 스페이스 누르면 아래로 화면 이동없이 영상 재생/정지만
+        case " ":
+            event.preventDefault();
+            handlePlayClick();
+            break;
+        // m/M/ㅡ 누를 경우 음소거 기능
+        case "m":
+        case "M":
+        case "ㅡ":
+            handleMuteClick();
+            break;
+        // f/F/ㄹ 누를 경우 전체화면 기능
+        case "f":
+        case "F":
+        case "ㄹ":
+            handleFullScreen();
+            break;
+        // 방향키 ↑ 볼륨 업 / ↓ 볼륨 다운
+        case "ArrowUp":
+        case "ArrowDown":
+            handleVolumeKey(k);
+            break;
+        // 방향키 ← 5초 이전 / → 5초 이후
+        case "ArrowLeft":
+        case "ArrowRight":
+            handleVideoMoveKey(k);
+            break;
+    }
+};
+
 playBtn.addEventListener("click", handlePlayClick);
+video.addEventListener("click", handlePlayClick); // 비디오 화면 클릭 시 재생/정지
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
 video.addEventListener("loadedmetadata", handleLoadedMetaData);
 video.addEventListener("timeupdate", handleTimeUpdate);
 timeline.addEventListener("input", handleTimelineChange);
 fullScreenBtn.addEventListener("click", handleFullScreen);
-video.addEventListener("mousemove", handleMouseMove);
-video.addEventListener("mouseleave", handleMouseLeave);
+videoContainer.addEventListener("mousemove", handleMouseMove);
+videoContainer.addEventListener("mouseleave", handleMouseLeave);
+window.addEventListener("keydown", handleKeydown); // 키보드 눌렀을 때 단축키 작동
