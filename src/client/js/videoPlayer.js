@@ -161,6 +161,7 @@ const handleVideoMoveKey = (key) => {
 // 키보드 단축키 기능 핸들러
 const handleKeydown = (event) => {
     const k = event.key;
+    console.log(k);
     // if (k === " ") {
     //     event.preventDefault();
     //     handlePlayClick();
@@ -196,12 +197,21 @@ const handleKeydown = (event) => {
     }
 };
 
+// Register View API
+const handleEnded = () => {
+    const { videoId } = videoContainer.dataset;
+    fetch(`/api/videos/${videoId}/view`, {
+        method: "POST",
+    });
+};
+
 playBtn.addEventListener("click", handlePlayClick);
-video.addEventListener("click", handlePlayClick); // 비디오 화면 클릭 시 재생/정지
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
+video.addEventListener("click", handlePlayClick); // 비디오 화면 클릭 시 재생/정지
 video.addEventListener("loadedmetadata", handleLoadedMetaData);
 video.addEventListener("timeupdate", handleTimeUpdate);
+video.addEventListener("ended", handleEnded); // 비디오 조회수 등록 API
 timeline.addEventListener("input", handleTimelineChange);
 fullScreenBtn.addEventListener("click", handleFullScreen);
 videoContainer.addEventListener("mousemove", handleMouseMove);

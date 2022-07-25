@@ -172,3 +172,17 @@ export const search = async (req, res) => {
     }
     return res.render("search", { pageTitle: "Search Video", videos });
 };
+
+// 비디오 조회수 등록 컨트롤러 (API)
+// 상태코드를 보내고 연결을 끝내기 위해 status => sendStatus 사용
+export const registerView = async (req, res) => {
+    const { id } = req.params;
+    const video = await Video.findById(id);
+
+    if (!video) {
+        return res.sendStatus(404);
+    }
+    video.meta.views = video.meta.views + 1;
+    await video.save();
+    return res.sendStatus(200);
+};

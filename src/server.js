@@ -9,6 +9,7 @@ import MongoStore from "connect-mongo";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
+import apiRouter from "./routers/apiRouter";
 import { localsMiddleware } from "./middlewares";
 
 // express function을 사용하여 express application 만들기
@@ -53,5 +54,6 @@ app.use("/static", express.static("assets")); // frontend static files
 app.use("/", rootRouter); // 메인 페이지
 app.use("/users", userRouter); // 유저 관련 페이지
 app.use("/videos", videoRouter); // 비디오 관련 페이지
+app.use("/api", apiRouter); // api 라우터
 
 export default app;
