@@ -47,7 +47,12 @@ app.use(localsMiddleware);
 // Static Files Serving
 app.use("/uploads", express.static("uploads")); // uploads folder
 app.use("/static", express.static("assets")); // frontend static files
-
+// sharedArrayBuffer 에러 방지를 위한 Cross origin isolation 미들웨어
+app.use((req, res, next) => {
+    res.header("Cross-Origin-Embedder-Policy", "require-corp");
+    res.header("Cross-Origin-Opener-Policy", "same-origin");
+    next();
+});
 /**
  * 라우터
  */
