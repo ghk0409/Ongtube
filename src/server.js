@@ -5,6 +5,7 @@
 import express from "express";
 import morgan from "morgan";
 import session from "express-session";
+import flash from "express-flash";
 import MongoStore from "connect-mongo";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
@@ -41,13 +42,16 @@ app.use(
     })
 );
 
+// flash mesaage 미들웨어
+// session을 이용하여 사용자에게 메시지를 남기기 위함
+app.use(flash());
 // locals 설정 미들웨어 (반드시 session 미들웨어 이후에 나와야 session에 접근 가능!!)
 app.use(localsMiddleware);
 
 // Static Files Serving
 app.use("/uploads", express.static("uploads")); // uploads folder
 app.use("/static", express.static("assets")); // frontend static files
-// sharedArrayBuffer 에러 방지를 위한 Cross origin isolation 미들웨어
+// 비디오 업로드 시 sharedArrayBuffer 에러 방지를 위한 Cross origin isolation 미들웨어
 app.use((req, res, next) => {
     res.header("Cross-Origin-Embedder-Policy", "require-corp");
     res.header("Cross-Origin-Opener-Policy", "same-origin");

@@ -56,6 +56,7 @@ export const getEdit = async (req, res) => {
     }
     // 해당 비디오 소유자가 아닐 경우 접근 불가 (비교 데이터 형식 주의)
     if (String(video.owner) !== String(_id)) {
+        req.flash("error", "You are not the owner of the video.");
         return res.status(403).redirect("/");
     }
     return res.render("edit", {
@@ -110,7 +111,7 @@ export const postUpload = async (req, res) => {
         session: {
             user: { _id },
         },
-        file: { path: fileUrl },
+        files: { video, thumb },
         body: { title, description, hashtags },
     } = req;
     // Video document 생성하기, mongo가 자동으로 고유한 랜덤 id값 부여함! (_id)
@@ -119,7 +120,8 @@ export const postUpload = async (req, res) => {
     try {
         const newVideo = await Video.create({
             title: title,
-            fileUrl: fileUrl,
+            fileUrl: video[0].path,
+            thumbUrl: thumb[0].path,
             description: description,
             owner: _id,
             hashtags: Video.formatHashtags(hashtags),

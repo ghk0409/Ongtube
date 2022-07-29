@@ -262,6 +262,7 @@ export const finishKakaoLogin = async (req, res) => {
 // 로그아웃 컨트x롤러
 export const logout = (req, res) => {
     req.session.destroy();
+    req.flash("info", "Bye Bye");
     return res.redirect("/");
 };
 
@@ -339,6 +340,7 @@ export const postEdit = async (req, res) => {
 export const getChangePassword = (req, res) => {
     // 소셜 계정일 경우, 비밀번호가 없으므로 해당 페이지 접근 막기
     if (req.session.user.socialOnly) {
+        req.flash("error", "Can't change password.");
         return res.redirect("/");
     }
     return res.render("users/change-password", {
@@ -386,6 +388,7 @@ export const postChangePassword = async (req, res) => {
     // 302 redirect 프록시 막기 위한 세션 파괴
     req.session.destroy();
     // send notification
+    req.flash("info", "Password updated");
     return res.redirect("/login");
 };
 
@@ -400,7 +403,7 @@ export const see = async (req, res) => {
             model: "User",
         },
     });
-
+    console.log(user.videos);
     if (!user) {
         return res.status(404).render("404", { pageTitle: "User not found." });
     }
