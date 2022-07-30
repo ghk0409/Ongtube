@@ -160,39 +160,42 @@ const handleVideoMoveKey = (key) => {
 
 // 키보드 단축키 기능 핸들러
 const handleKeydown = (event) => {
-    const k = event.key;
-    // if (k === " ") {
-    //     event.preventDefault();
-    //     handlePlayClick();
-    // }
-    switch (k) {
-        // 유튜브처럼 스페이스 누르면 아래로 화면 이동없이 영상 재생/정지만
-        case " ":
-            event.preventDefault();
-            handlePlayClick();
-            break;
-        // m/M/ㅡ 누를 경우 음소거 기능
-        case "m":
-        case "M":
-        case "ㅡ":
-            handleMuteClick();
-            break;
-        // f/F/ㄹ 누를 경우 전체화면 기능
-        case "f":
-        case "F":
-        case "ㄹ":
-            handleFullScreen();
-            break;
-        // 방향키 ↑ 볼륨 업 / ↓ 볼륨 다운
-        case "ArrowUp":
-        case "ArrowDown":
-            handleVolumeKey(k);
-            break;
-        // 방향키 ← 5초 이전 / → 5초 이후
-        case "ArrowLeft":
-        case "ArrowRight":
-            handleVideoMoveKey(k);
-            break;
+    // 댓글 입력창에서 키보드 단축키 방지 (textarea id = commentArea 지정)
+    if (event.target.id !== "commentArea") {
+        const k = event.key;
+        // if (k === " ") {
+        //     event.preventDefault();
+        //     handlePlayClick();
+        // }
+        switch (k) {
+            // 유튜브처럼 스페이스 누르면 아래로 화면 이동없이 영상 재생/정지만
+            case " ":
+                event.preventDefault();
+                handlePlayClick();
+                break;
+            // m/M/ㅡ 누를 경우 음소거 기능
+            case "m":
+            case "M":
+            case "ㅡ":
+                handleMuteClick();
+                break;
+            // f/F/ㄹ 누를 경우 전체화면 기능
+            case "f":
+            case "F":
+            case "ㄹ":
+                handleFullScreen();
+                break;
+            // 방향키 ↑ 볼륨 업 / ↓ 볼륨 다운
+            case "ArrowUp":
+            case "ArrowDown":
+                handleVolumeKey(k);
+                break;
+            // 방향키 ← 5초 이전 / → 5초 이후
+            case "ArrowLeft":
+            case "ArrowRight":
+                handleVideoMoveKey(k);
+                break;
+        }
     }
 };
 

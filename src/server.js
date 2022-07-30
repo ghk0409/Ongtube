@@ -29,6 +29,8 @@ app.set("views", process.cwd() + "/src/views");
 app.use(logger);
 // form의 value들을 이해할 수 있고 자바스크립트 형식(오브젝트)으로 만들어줌
 app.use(express.urlencoded({ extended: true }));
+// request로 전달된 문자열을 받아서 json으로 바꿔줌 (header Content-Type: "application/json" 필수!)
+app.use(express.json());
 
 // Session 미들웨어 적용
 app.use(
