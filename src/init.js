@@ -8,6 +8,7 @@ import "./db";
 // db와 mongoose 연결 후 Model 인식
 import "./models/Video";
 import "./models/User";
+import "./models/Comment";
 import app from "./server";
 
 const PORT = 4000;

@@ -161,7 +161,6 @@ const handleVideoMoveKey = (key) => {
 // 키보드 단축키 기능 핸들러
 const handleKeydown = (event) => {
     const k = event.key;
-    console.log(k);
     // if (k === " ") {
     //     event.preventDefault();
     //     handlePlayClick();

@@ -261,7 +261,10 @@ export const finishKakaoLogin = async (req, res) => {
 
 // 로그아웃 컨트x롤러
 export const logout = (req, res) => {
-    req.session.destroy();
+    // req.session.destroy();
+    req.session.user = null;
+    res.locals.loggedInUser = req.session.user;
+    req.session.loggedIn = false;
     req.flash("info", "Bye Bye");
     return res.redirect("/");
 };
