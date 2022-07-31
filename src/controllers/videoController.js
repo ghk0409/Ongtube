@@ -1,5 +1,6 @@
 import User from "../models/User";
 import Video from "../models/Video";
+import Comment from "../models/Comment";
 
 // 홈 페이지 렌더링 컨트롤러
 export const home = async (req, res) => {
@@ -28,8 +29,10 @@ export const home = async (req, res) => {
 export const watch = async (req, res) => {
     // ES6 문법 사용 (옆과 동알 -> const id = req.params.id;)
     const { id } = req.params;
-    // 전달받은 Id로 video 조회 + owner 속성에 해당하는 데이터 연동(User모델 연동)
-    const video = await (await Video.findById(id)).populate("owner");
+    // 전달받은 Id로 video 조회 + owner 속성에 해당하는 데이터 연동(User모델 연동) + 댓글 데이터 연동(Comment모델)
+    const video = await (
+        await (await Video.findById(id)).populate("owner")
+    ).populate("comments");
 
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
@@ -175,6 +178,9 @@ export const search = async (req, res) => {
     return res.render("search", { pageTitle: "Search Video", videos });
 };
 
+/*
+API Controller
+*/
 // 비디오 조회수 등록 컨트롤러 (API)
 // 상태코드를 보내고 연결을 끝내기 위해 status => sendStatus 사용
 export const registerView = async (req, res) => {
@@ -189,8 +195,29 @@ export const registerView = async (req, res) => {
     return res.sendStatus(200);
 };
 
-export const createComment = (req, res) => {
-    console.log(req.params);
-    console.log(req.body.text);
-    return res.end();
+// 댓글 등록 컨트롤러 (API)
+export const createComment = async (req, res) => {
+    const {
+        params: { id },
+        body: { text },
+        session: { user },
+    } = req;
+
+    // 비디오 조회
+    const video = await Video.findById(id);
+    // 비디오 존재 유무 검사
+    if (!video) {
+        return res.sendStatus(404);
+    }
+    // comment DB 등록
+    const comment = await Comment.create({
+        contents: text,
+        owner: user._id,
+        video: id,
+    });
+    // video comments에 해당 댓글 id 추가
+    video.comments.push(comment._id);
+    video.save();
+    // 프론트엔드로 status code + 신규 댓글 id값 같이 리턴
+    return res.status(201).json({ newCommentId: comment._id });
 };

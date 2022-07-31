@@ -31,23 +31,18 @@ block content
             a(href=`${video.id}/delete`) Delete Video &rarr;
     
     if loggedIn
-        div.video__comments
-            form.video__comment-form#commentForm
+        div.video__add-comments
+            form.video__add-comment-form#commentForm
                 textarea#commentArea(cols="30", rows="10", placeholder="Write a nice commment.")
                 button Add Comment
-    //-
-        div
-            p=video.description
-            small=video.createdAt
-        div 
-            small Uploaded by 
-                a(href=`/users/${video.owner._id}`) #{video.owner.username}
-        
-        // 해당 영상 주인에게만 수정/삭제 버튼 출력
-        if String(video.owner._id) === String(loggedInUser._id)
-            a(href=`${video.id}/edit`) Edit Video &rarr;
-            br
-            a(href=`${video.id}/delete`) Delete Video &rarr;
+
+    div.video__comments
+        ul
+            each comment in video.comments.reverse()
+                li.video__comment(data-comment-id=comment._id)
+                    i.fas.fa-comment
+                    span  #{comment.contents}
+                    span ❌
 
 block scripts 
     script(src="/static/js/videoPlayer.js")
