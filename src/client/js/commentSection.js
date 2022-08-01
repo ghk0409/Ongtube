@@ -16,12 +16,13 @@ const addComment = (text, newCommentId) => {
     const span = document.createElement("span");
     span.innerText = ` ${text}`;
     // span X 만들기
-    const spanX = document.createElement("span");
-    spanX.innerText = "❌";
+    const aDelete = document.createElement("a");
+    aDelete.href = `/api/comment/${newCommentId}/delete`;
+    aDelete.innerText = "❌";
 
     newComment.appendChild(icon);
     newComment.appendChild(span);
-    newComment.appendChild(spanX);
+    newComment.appendChild(aDelete);
     // 신규 댓글을 가장 위에 추가하기 위해 prepend()
     videoComments.prepend(newComment);
 };

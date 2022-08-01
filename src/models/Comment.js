@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import User from "./User";
+import Video from "./Video";
 
 // 댓글 스키마 생성
 const commentSchema = new mongoose.Schema({
@@ -17,7 +19,6 @@ const commentSchema = new mongoose.Schema({
 });
 
 // 댓글 모델 생성
-// 비디오 데이터 모델
 const Comment = mongoose.model("Comment", commentSchema);
 
 export default Comment;

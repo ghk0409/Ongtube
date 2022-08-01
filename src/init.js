@@ -3,6 +3,7 @@
  * * > 서버 시작 시 필요한 모든 기능 초기화(import)
  *
  */
+import "regenerator-runtime";
 import "dotenv/config";
 import "./db";
 // db와 mongoose 연결 후 Model 인식

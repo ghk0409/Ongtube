@@ -32,7 +32,13 @@ export const watch = async (req, res) => {
     // 전달받은 Id로 video 조회 + owner 속성에 해당하는 데이터 연동(User모델 연동) + 댓글 데이터 연동(Comment모델)
     const video = await (
         await (await Video.findById(id)).populate("owner")
-    ).populate("comments");
+    ).populate({
+        path: "comments",
+        populate: {
+            path: "owner",
+            model: "User",
+        },
+    });
 
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
@@ -220,4 +226,43 @@ export const createComment = async (req, res) => {
     video.save();
     // 프론트엔드로 status code + 신규 댓글 id값 같이 리턴
     return res.status(201).json({ newCommentId: comment._id });
+};
+
+export const deleteComment = async (req, res) => {
+    const {
+        params: { id },
+        session: {
+            user: { _id },
+        },
+    } = req;
+    // console.log(id, _id);
+
+    // comment 조회
+    const comment = await Comment.findById(id);
+    console.log(comment);
+    // comment 존재 유무 검사
+    if (!comment) {
+        req.flash("error", "Comment not found...");
+        return res.sendStatus(404);
+    }
+    // user 조회
+    const user = await User.findById(_id);
+    // comment 소유자 검사
+    if (String(comment.owner) !== String(user._id)) {
+        req.flash("error", "You are not the owner of the comment.");
+        return res.status(404).redirect("/");
+    }
+    // video 조회
+    const video = await Video.findById(comment.video);
+
+    // comment 삭제
+    await Comment.findByIdAndDelete(id);
+    // 해당 comment 데이터 다른 DB에서도 삭제
+    user.comments.pull(id);
+    video.comments.pull(id);
+    user.save();
+    video.save();
+    // 삭제 성공 알림 및 리다이렉트
+    req.flash("info", "Successfully delete comment.");
+    return res.redirect(`/videos/${video._id}`);
 };
