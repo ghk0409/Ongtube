@@ -12,7 +12,8 @@ import "./models/User";
 import "./models/Comment";
 import app from "./server";
 
-const PORT = 4000;
+// heroku 빌드: heroku가 실행하는 PORT | local 빌드: 4000
+const PORT = process.env.PORT || 4000;
 
 // handleListening 메서드
 const handleListening = () =>
