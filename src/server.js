@@ -55,7 +55,8 @@ app.use("/uploads", express.static("uploads")); // uploads folder
 app.use("/static", express.static("assets")); // frontend static files
 // 비디오 업로드 시 sharedArrayBuffer 에러 방지를 위한 Cross origin isolation 미들웨어
 app.use((req, res, next) => {
-    res.header("Cross-Origin-Embedder-Policy", "require-corp");
+    // res.header("Cross-Origin-Embedder-Policy", "require-corp");
+    res.header("Cross-Origin-Embedder-Policy", "credentialless");
     res.header("Cross-Origin-Opener-Policy", "same-origin");
     next();
 });
