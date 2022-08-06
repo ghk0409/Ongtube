@@ -9,10 +9,20 @@ const s3 = new aws.S3({
     },
 });
 
-const multerUploader = multerS3({
+// 헤로쿠 배포일 경우 -> S3 / 로컬 서버일 경우 -> 로컬 저장
+const isHeroku = process.env.NODE_ENV === "production";
+
+const s3ImageUploader = multerS3({
     s3: s3,
-    bucket: "ongtube",
+    bucket: "ongtube/images",
     acl: "public-read",
+});
+
+const s3VideoUploader = multerS3({
+    s3: s3,
+    bucket: "ongtube/videos",
+    acl: "public-read",
+    contentType: multerS3.AUTO_CONTENT_TYPE,
 });
 
 // session 정보 또는 기본 정보를 res.locals에 저장하기 위한 미들웨어
@@ -20,6 +30,7 @@ export const localsMiddleware = (req, res, next) => {
     res.locals.loggedIn = Boolean(req.session.loggedIn);
     res.locals.siteName = "Ongtube";
     res.locals.loggedInUser = req.session.user || {};
+    res.locals.isHeroku = isHeroku;
     next();
 };
 
@@ -56,7 +67,7 @@ export const avatarUpload = multer({
     limits: {
         fileSize: 3000000, // 약 3MB
     },
-    storage: multerUploader,
+    storage: isHeroku ? s3ImageUploader : undefined,
 });
 
 // video 업로드 관련 multer 미들웨어
@@ -65,5 +76,5 @@ export const videoUpload = multer({
     limits: {
         fileSize: 10000000, // 약 10MB
     },
-    storage: multerUploader,
+    storage: isHeroku ? s3VideoUploader : undefined,
 });

@@ -320,14 +320,18 @@ export const postEdit = async (req, res) => {
             });
         }
     }
-
+    const isHeroku = process.env.NODE_ENV === "production";
     // mongoDB Update
     // avatar 파일이 업로드 된 경우에 해당 file로 저장, 아닐 경우 기존 avatarUrl 유지
     const updateUser = await User.findByIdAndUpdate(
         _id,
         {
             // S3 저장소 위치가 담긴 file.location 사용 (로컬: file.path)
-            avatarUrl: file ? file.location : avatarUrl,
+            avatarUrl: file
+                ? isHeroku
+                    ? file.location
+                    : file.path
+                : avatarUrl,
             name,
             email,
             username,

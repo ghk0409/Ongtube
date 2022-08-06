@@ -123,6 +123,7 @@ export const postUpload = async (req, res) => {
         files: { video, thumb },
         body: { title, description, hashtags },
     } = req;
+    const isHeroku = process.env.NODE_ENV === "production";
     // Video document 생성하기, mongo가 자동으로 고유한 랜덤 id값 부여함! (_id)
     // Video document DB 저장 (promise return을 위한 async/await)
     // DB 저장 방법 1) new, object, save 2) create
@@ -130,8 +131,8 @@ export const postUpload = async (req, res) => {
         const newVideo = await Video.create({
             title: title,
             // S3 저장소 위치가 담긴 file.location 사용 (로컬: file.path)
-            fileUrl: video[0].location,
-            thumbUrl: thumb[0].location,
+            fileUrl: isHeroku ? video[0].location : video[0].path,
+            thumbUrl: isHeroku ? thumb[0].location : video[0].path,
             description: description,
             owner: _id,
             hashtags: Video.formatHashtags(hashtags),
