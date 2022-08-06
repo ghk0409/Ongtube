@@ -264,6 +264,7 @@ export const deleteComment = async (req, res) => {
     user.save();
     video.save();
     // 삭제 성공 알림 및 리다이렉트
-    req.flash("info", "Successfully delete comment.");
-    return res.redirect(`/videos/${video._id}`);
+    // req.flash("info", "Successfully delete comment.");
+    // return res.redirect(`/videos/${video._id}`);
+    return res.sendStatus(200);
 };

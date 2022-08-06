@@ -42,9 +42,9 @@ block content
                 li.video__comment(data-comment-id=comment._id)
                     i.fas.fa-comment
                     span  #{comment.contents}
-                    //- 해당 comment 입력한 사람과 로그인 유저가 동일할 경우
+                    //- 해당 comment 입력한 사람과 로그인 유저가 동일할 경우 href=`/api/comment/${comment._id}/delete`
                     if String(comment.owner._id) === String(loggedInUser._id)
-                        a(href=`/api/comment/${comment._id}/delete`) ❌
+                        span.video__comment-deleteBtn(data-comment-id=comment._id) ❌
 
 block scripts 
     script(src="/static/js/videoPlayer.js")

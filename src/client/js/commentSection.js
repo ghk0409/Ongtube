@@ -1,5 +1,6 @@
 const videoContainer = document.getElementById("videoContainer");
 const form = document.getElementById("commentForm");
+const deleteBtns = document.querySelectorAll(".video__comment-deleteBtn");
 
 // 댓글 생성 함수 (HTML Element 생성)
 const addComment = (text, newCommentId) => {
@@ -16,8 +17,9 @@ const addComment = (text, newCommentId) => {
     const span = document.createElement("span");
     span.innerText = ` ${text}`;
     // span X 만들기
-    const aDelete = document.createElement("a");
-    aDelete.href = `/api/comment/${newCommentId}/delete`;
+    const aDelete = document.createElement("span");
+    // aDelete.href = `/api/comment/${newCommentId}/delete`;
+    aDelete.dataset.commentId = `${newCommentId}`;
     aDelete.innerText = "❌";
 
     newComment.appendChild(icon);
@@ -59,7 +61,29 @@ const handleSubmit = async (event) => {
     }
 };
 
+// 댓글 삭제 핸들러
+const handleDeleteComment = async (event) => {
+    const videoComments = document.querySelector(".video__comments ul");
+    const commentId = event.target.dataset.commentId;
+    // 댓글 삭제 API 호출
+    const response = await fetch(`/api/comment/${commentId}/delete`, {
+        method: "GET",
+    });
+
+    if (response.status === 200) {
+        // 삭제 성공 시, 해당 댓글 실시간으로 새로고침없이 삭제되게끔 처리
+        const deletedComment = videoComments.querySelector(
+            `.video__comment[data-comment-id="${commentId}"]`
+        );
+        deletedComment.remove();
+    }
+};
+
 // form이 있을 경우에만 이벤트리스너 추가
 if (form) {
     form.addEventListener("submit", handleSubmit);
+    deleteBtns.forEach((btn) => {
+        btn.addEventListener("click", handleDeleteComment);
+        // btn.parentNode.removeChild(btn)
+    });
 }
