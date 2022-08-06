@@ -227,6 +227,7 @@ export const createComment = async (req, res) => {
     const commentUser = await User.findById(user._id);
     // user comments에 해당 댓글 id 추가
     commentUser.comments.push(comment._id);
+    commentUser.save();
     // video comments에 해당 댓글 id 추가
     video.comments.push(comment._id);
     video.save();
