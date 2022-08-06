@@ -211,7 +211,8 @@ playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
 video.addEventListener("click", handlePlayClick); // 비디오 화면 클릭 시 재생/정지
-video.addEventListener("loadedmetadata", handleLoadedMetaData);
+video.addEventListener("canplay", handleLoadedMetaData);
+handleLoadedMetaData();
 video.addEventListener("timeupdate", handleTimeUpdate);
 video.addEventListener("ended", handleEnded); // 비디오 조회수 등록 API
 timeline.addEventListener("input", handleTimelineChange);
