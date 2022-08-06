@@ -326,7 +326,8 @@ export const postEdit = async (req, res) => {
     const updateUser = await User.findByIdAndUpdate(
         _id,
         {
-            avatarUrl: file ? file.path : avatarUrl,
+            // S3 저장소 위치가 담긴 file.location 사용 (로컬: file.path)
+            avatarUrl: file ? file.location : avatarUrl,
             name,
             email,
             username,

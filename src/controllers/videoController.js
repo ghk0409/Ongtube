@@ -129,8 +129,9 @@ export const postUpload = async (req, res) => {
     try {
         const newVideo = await Video.create({
             title: title,
-            fileUrl: video[0].path,
-            thumbUrl: thumb[0].path,
+            // S3 저장소 위치가 담긴 file.location 사용 (로컬: file.path)
+            fileUrl: video[0].location,
+            thumbUrl: thumb[0].location,
             description: description,
             owner: _id,
             hashtags: Video.formatHashtags(hashtags),

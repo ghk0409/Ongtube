@@ -1,4 +1,19 @@
 import multer from "multer";
+import multerS3 from "multer-s3";
+import aws from "aws-sdk";
+
+const s3 = new aws.S3({
+    credentials: {
+        accessKeyId: process.env.AWS_ID,
+        secretAccessKey: process.env.AWS_SECRET,
+    },
+});
+
+const multerUploader = multerS3({
+    s3: s3,
+    bucket: "ongtube",
+    acl: "public-read",
+});
 
 // session 정보 또는 기본 정보를 res.locals에 저장하기 위한 미들웨어
 export const localsMiddleware = (req, res, next) => {
@@ -41,6 +56,7 @@ export const avatarUpload = multer({
     limits: {
         fileSize: 3000000, // 약 3MB
     },
+    storage: multerUploader,
 });
 
 // video 업로드 관련 multer 미들웨어
@@ -49,4 +65,5 @@ export const videoUpload = multer({
     limits: {
         fileSize: 10000000, // 약 10MB
     },
+    storage: multerUploader,
 });
