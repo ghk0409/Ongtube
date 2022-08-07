@@ -82,7 +82,7 @@ export const postEdit = async (req, res) => {
     } = req.session;
     const { title, description, hashtags } = req.body;
     // DB 조회 (해당 id 데이터 존재 유무)
-    const video = await Video.exists({ _id: id });
+    const video = await Video.findById(id);
 
     // DB에 해당 데이터 없을 경우 에러처리
     if (!video) {
@@ -94,6 +94,7 @@ export const postEdit = async (req, res) => {
     if (String(video.owner) !== String(_id)) {
         return res.status(403).redirect("/");
     }
+
     // 변경사항 DB 업데이트 (해당 Id값 데이터 업데이트)
     await Video.findByIdAndUpdate(id, {
         title: title,

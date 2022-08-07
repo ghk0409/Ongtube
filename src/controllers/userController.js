@@ -341,6 +341,7 @@ export const postEdit = async (req, res) => {
     );
     // Session Update
     req.session.user = updateUser;
+    req.flash("info", "User profile updated");
     return res.redirect("/users/edit");
 };
 
@@ -415,7 +416,6 @@ export const see = async (req, res) => {
     if (!user) {
         return res.status(404).render("404", { pageTitle: "User not found." });
     }
-
     return res.render("users/profile", {
         pageTitle: user.name,
         user,

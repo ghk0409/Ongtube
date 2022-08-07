@@ -17,7 +17,7 @@ const addComment = (text, newCommentId) => {
     const span = document.createElement("span");
     span.innerText = ` ${text}`;
     // span X 만들기
-    const aDelete = document.createElement("span");
+    const aDelete = document.createElement("button");
     // aDelete.href = `/api/comment/${newCommentId}/delete`;
     aDelete.dataset.commentId = `${newCommentId}`;
     aDelete.innerText = "❌";

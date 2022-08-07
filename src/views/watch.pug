@@ -21,14 +21,23 @@ block content
                     i.fas.fa-expand
 
     div.video__data
+        div.video__tags
+            each tag in video.hashtags
+                p=tag
         p.video__title=video.title
-        small.video__owner Uploaded by 
-            a(href=`/users/${video.owner._id}`)=video.owner.name
-        small.video__createdAt=new Date(video.createdAt).toLocaleDateString("ko-kr", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})
+        div.video__info
+            p 조회수 #{video.meta.views}회
+            p #{video.createdAt.toISOString().split("T")[0]} 
+            //- p.video__createdAt=new Date(video.createdAt).toLocaleDateString("ko-kr", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})
+        div.video__owner
+            a(href=`/users/${video.owner._id}`)
+                img(src=`/${video.owner.avatarUrl}`)
+            a.video__owner-name(href=`/users/${video.owner._id}`)=video.owner.name
         if String(video.owner._id) === String(loggedInUser._id)
-            a(href=`${video.id}/edit`) Edit Video &rarr;
-            br
-            a(href=`${video.id}/delete`) Delete Video &rarr;
+            div.video__owner-btns
+                a(href=`${video.id}/edit`) Edit Video &rarr;
+                br
+                a(href=`${video.id}/delete`) Delete Video &rarr;
     
     if loggedIn
         div.video__add-comments
@@ -44,7 +53,7 @@ block content
                     span  #{comment.contents}
                     //- 해당 comment 입력한 사람과 로그인 유저가 동일할 경우 href=`/api/comment/${comment._id}/delete`
                     if String(comment.owner._id) === String(loggedInUser._id)
-                        span.video__comment-deleteBtn(data-comment-id=comment._id) ❌
+                        button.video__comment-deleteBtn(data-comment-id=comment._id) ❌
 
 block scripts 
     script(src="/static/js/videoPlayer.js")
